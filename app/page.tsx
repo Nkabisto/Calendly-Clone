@@ -1,13 +1,13 @@
-//import LandingPage from "@/components/LandingPage"
-//import { currentUser } from "@clerk/nextjs/server"
-//import { redirect} from "next/navigation"
-import {useUser} from "@clerk/nextjs";
+import LandingPage from "@/components/LandingPage"
+import { currentUser } from "@clerk/nextjs/server"
+import { redirect} from "next/navigation"
 
-export default function HomePage() {
-  const {isSignedIn, user } = useUser();
+export default async function HomePage() {
+  const user = await currentUser();
 
-  if (!isSignedIn) return <LandingPage />;
-    // If user logged in, redirect them to the events page
-    return redirect('/events');  
+  // If no user is logged in, render the public landing page
+  if (!user) return <LandingPage />;
+  // If user logged in, redirect them to the events page
+  return redirect('/events');
 
 }
