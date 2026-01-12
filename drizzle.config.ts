@@ -1,15 +1,21 @@
 import { defineConfig } from "drizzle-kit"
 
-// Get the database URL from environment variables
+// 🔍 Get the database URL from environment variables
 const databaseUrl = process.env.DATABASE_URL
 
-// If the database URL is not defined, throw an error to prevent misconfiguration
+//  ❌ If the database URL is not defined, throw an error to prevent misconfiguration
 if (!databaseUrl){
-  throw new Error(" DATABASE_URL is not defined in environment variables.")
+  throw new Error("❌ DATABASE_URL is not defined in environment variables.")
 }
 
-// Export the Drizzle config using defineConfig helper
+// ✅ Export the Drizzle config using defineConfig helper
 export default defineConfig({
+  // 📁 Path to your schema schema definitions (Drizzle ORM will scan this file)
+  schema: "./drizzle/schema.ts",
+
+  // 💾 Directory where Drizzle output migration files
+  out: "./drizzle/migrations",
+
   // Specifiy which SQL dialect your're using (e.g., PostgreSQL, MySQL)
   dialect: "postgresql",
 
