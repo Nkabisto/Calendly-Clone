@@ -1,4 +1,5 @@
-import { pgTable, index } from "drizzle-orm/pg-core";
+import { pgTable, index, relations } from "drizzle-orm/pg-core";
+import { DAYS_OF_WEEK_IN_ORDER } from "@/constants";
 
 // Define a reusable `createdAt` timestamp column with default value set to now
 const createdAt = timestamp("createdAt").notNull().defaultNow()
@@ -41,6 +42,10 @@ export const ScheduleTable = pgTable("schedules", {
   updatedAt,                                          // when the schedule was las updated
 })
 
+// Define relationships for the scheduleTable: a schedule has many scheduleAvailabilities
+export const scheduleRelations relations(ScheduleTable, ({ many }) => ({
+  availabilities: many(scheduleAvailabilityTable), // one-to-many relationship
+}))
 // Define a PostgreSQL ENUM for the days of the week
 export const scheduleDayOfWeekEnum = pgEnum("day", DAYS_OF_WEEK_IN_ORDER)
 // Define the "scheduleAvailabilities" table, which stores available time slots per day
@@ -59,4 +64,15 @@ export const scheduleAvailabilityTable = pgTable(
   table =>([
     index("scheduleIdIndex").on(table.scheduleId),      // index on foreign key for faster lookups
   ])
+)
+
+// Define the reverse relations: each availability belongs to a schedule
+export const ScheduleAvailabilityRelations = relations(
+  ScheduleAvailabilityTable,
+  ({ one }) => ({
+    schedule: one(ScheduleTable, {
+      fields: [ScheduleAvailabilityTable.scheduleId], // local key
+      references: [ScheduleTable.id], // foreign key
+    }),
+  })
 )
